@@ -16,7 +16,7 @@ public class DbExecMgr
 
     public static void refreshCon(String source)
     {
-        DBconnectionMgr.disAllConnection();
+        // DBconnectionMgr.disAllConnection();
         DBconnectionMgr.setJDBCName(source);
         con = DBconnectionMgr.getConnection();
     }

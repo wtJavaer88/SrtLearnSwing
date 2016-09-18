@@ -23,5 +23,11 @@ public class MultiDataSource
         Map selectAllSqlMap3 = DbExecMgr
                 .getSelectAllSqlMap("SELECT * FROM SRTINFO");
         System.out.println(selectAllSqlMap3.size());
+        DbExecMgr.refreshCon(DataSource.BUSINESS);
+        DbExecMgr.refreshCon(DataSource.DICTIONARY);
+        DbExecMgr.refreshCon(DataSource.SRT);
+        Map selectAllSqlMap4 = DbExecMgr
+                .getSelectAllSqlMap("SELECT * FROM SEASON");
+        System.out.println("Season counts: " + selectAllSqlMap4.size());
     }
 }

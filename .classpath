@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="libs/jaudiotagger-2.0.2.jar"/>
 	<classpathentry kind="lib" path="libs/myjar.jar"/>
 	<classpathentry kind="lib" path="libs/pinyin4j-2.5.0.jar"/>
+	<classpathentry kind="lib" path="libs/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

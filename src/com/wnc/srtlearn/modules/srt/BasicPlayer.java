@@ -82,4 +82,9 @@ public class BasicPlayer
     {
         return m_line.getMicrosecondPosition() / 1000.0;
     }
+
+    public static void main(String[] args)
+    {
+        new BasicPlayer().play(new File("C:\\word.mp3"), 1);
+    }
 }

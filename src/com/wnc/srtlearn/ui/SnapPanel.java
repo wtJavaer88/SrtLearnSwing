@@ -2,6 +2,7 @@ package com.wnc.srtlearn.ui;
 
 import java.awt.AWTEvent;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -35,9 +36,8 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     JButton preBt;// 上一个
     JCheckBox unComplete;
     public JTextField jtfSrtFile;
-    public JTextField jtfEng;
-    public JTextField jtfChs;
-    public JTextArea tareaTest;
+    public JTextArea jtfEng;
+    public JTextArea jtfChs;
 
     private final String SRT_PLAY_TEXT = "播放";
     private final String SRT_STOP_TEXT = "停止";
@@ -65,12 +65,18 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         nextBt = new JButton("Next");// 下一个
         preBt = new JButton("Pre");// 下一个
         jtfSrtFile = new JTextField(200);
-        jtfEng = new JTextField(200);
-        jtfChs = new JTextField(200);
-        tareaTest = new JTextArea("缩略词词典", 20, 60);
-        tareaTest.setSelectedTextColor(Color.RED);
-        tareaTest.setLineWrap(true); // 激活自动换行功能
-        tareaTest.setWrapStyleWord(true); // 激活断行不断字功能
+        jtfEng = new JTextArea("", 20, 60);
+        jtfChs = new JTextArea("", 20, 60);
+        jtfEng.setSelectedTextColor(Color.RED);
+        jtfEng.setLineWrap(true); // 激活自动换行功能
+        jtfEng.setWrapStyleWord(true); // 激活断行不断字功能
+        jtfChs.setSelectedTextColor(Color.RED);
+        jtfChs.setLineWrap(true); // 激活自动换行功能
+        jtfChs.setWrapStyleWord(true); // 激活断行不断字功能
+
+        Font font = new Font("宋体", Font.PLAIN, 18);
+        jtfEng.setFont(font);
+        jtfChs.setFont(font);
 
         // 创建复选框按键，并设置快捷键，和选定
         unComplete = new JCheckBox("unComplete");
@@ -89,8 +95,6 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         jtfSrtFile.setBounds(50, 100, 300, 30);
         jtfEng.setBounds(50, 200, 300, 60);
         jtfChs.setBounds(50, 260, 300, 60);
-        tareaTest.setLocation(50, 270);
-        tareaTest.setSize(300, 55);
     }
 
     @Override
@@ -298,12 +302,28 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     }
 
     @Override
-    public void doLeft()
+    public void callByKeyCode(int keycode)
+    {
+        switch (keycode)
+        {
+        case KeyEvent.VK_LEFT:
+            doLeft();
+            break;
+        case KeyEvent.VK_RIGHT:
+            doRight();
+            break;
+        case KeyEvent.VK_SPACE:
+            clickPlayBtn();
+            break;
+        }
+
+    }
+
+    private void doLeft()
     {
         getSrtInfoAndPlay(SRT_VIEW_TYPE.VIEW_LEFT);
     }
 
-    @Override
     public void doRight()
     {
         getSrtInfoAndPlay(SRT_VIEW_TYPE.VIEW_RIGHT);

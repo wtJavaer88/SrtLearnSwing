@@ -35,15 +35,7 @@ public class ImplAWTEventListener implements AWTEventListener
 
     private void keyPressed(KeyEvent e)
     {
-        switch (e.getKeyCode())
-        {
-        case KeyEvent.VK_LEFT:
-            callBack.doLeft();
-            break;
-        case KeyEvent.VK_RIGHT:
-            callBack.doRight();
-            break;
-        }
+        callBack.callByKeyCode(e.getKeyCode());
     }
 
     private void keyReleased(KeyEvent event)

@@ -25,7 +25,10 @@ import srt.SrtPlayService;
 import srt.SrtTextHelper;
 import srt.TimeHelper;
 
+import com.wnc.basic.BasicFileUtil;
+import com.wnc.srtlearn.dao.DictionaryDao;
 import com.wnc.srtlearn.dao.FavDao;
+import com.wnc.srtlearn.dao.Topic;
 import common.swing.AlertUtil;
 import common.swing.INewFrame;
 import common.swing.ImplAWTEventListener;
@@ -47,6 +50,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     JCheckBox unComplete;
 
     JLabel processLabel;
+    JLabel dictLabel;// 显示字典信息
 
     public JTextField jtfSrtFile;
     public JTextArea jtaEng;
@@ -73,6 +77,9 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     public void init()
     {
         this.setLayout(null);
+
+        Font font = new Font("微软雅黑", Font.BOLD, 20);
+
         chooseBt = new JButton("选择字幕");// 选择
         startBt = new JButton("Start!");// 开始
         nextBt = new JButton("Next");// 下一个
@@ -80,24 +87,25 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         favoriteBt = new JButton("喜欢");
         snapBt = new JButton("截图");
         processLabel = new JLabel();// 进度标签
+        dictLabel = new JLabel("<html>hello <br> world!</html>");
+        dictLabel.setFont(font);
 
         jtfSrtFile = new JTextField(200);
         jtfSrtFile.setToolTipText("请选择一集字幕，或者手动拖拽！");
-        jtaEng = getTextArea();
-        jtaChs = getTextArea();
+        jtaEng = getTextArea(font);
+        jtaChs = getTextArea(font);
         // 创建复选框按键，并设置快捷键，和选定
         unComplete = new JCheckBox("unComplete");
         unComplete.setMnemonic(KeyEvent.VK_C);
     }
 
-    public JTextArea getTextArea()
+    public JTextArea getTextArea(Font font)
     {
         JTextArea area = new JTextArea("", 20, 80);
         area = new JTextArea("", 20, 80);
         area.setSelectedTextColor(Color.RED);
         area.setLineWrap(true); // 激活自动换行功能
         area.setWrapStyleWord(true); // 激活断行不断字功能
-        Font font = new Font("微软雅黑", Font.BOLD, 20);
         area.setFont(font);
         return area;
     }
@@ -116,6 +124,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         snapBt.setBounds(450, 120, 100, 30);
 
         processLabel.setBounds(50, 160, 300, 30);
+        dictLabel.setBounds(480, 160, 300, 240);
 
         jtaEng.setBounds(50, 200, 400, 90);
         jtaChs.setBounds(50, 300, 400, 90);
@@ -133,6 +142,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         this.add(snapBt);
 
         this.add(processLabel);
+        this.add(dictLabel);
 
         this.add(jtfSrtFile);
         this.add(jtaEng);
@@ -212,7 +222,16 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
                 int time = 1 + (int) (TimeHelper.getTime(DataHolder
                         .getCurrent().getFromTime()) / 1000);
                 String file = DataHolder.getFileKey();
-                SnapUtil.getSnapPic(time, file);
+                String snapPic = SnapUtil.getSnapPic(time, file);
+                if(BasicFileUtil.isExistFile(snapPic)
+                        && BasicFileUtil.getFileSize(snapPic) > 0)
+                {
+                    com.wnc.run.RunCmd.runCommand("cmd /c start " + snapPic);
+                }
+                else
+                {
+                    AlertUtil.showShortToast("截图失败!");
+                }
             }
         });
 
@@ -274,7 +293,30 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     public void play(SrtInfo srtInfo)
     {
         System.out.println("play: " + " " + srtInfo);
+        genetateDict(srtInfo);
         setSrtContentAndPlay(srtInfo);
+    }
+
+    private void genetateDict(SrtInfo srtInfo)
+    {
+        Topic topic = DictionaryDao.getCETTopic(srtInfo.getEng());
+        if(topic != null)
+        {
+            StringBuilder accum = new StringBuilder(128);
+            accum.append("<html>");
+            accum.append(topic.getTopic_word());
+            accum.append("<br>");
+            accum.append(topic.getMean_cn());
+            accum.append("<br>");
+            accum.append("<br>");
+            accum.append(topic.getBookName());
+            accum.append("</html>");
+            this.dictLabel.setText(accum.toString());
+        }
+        else
+        {
+            this.dictLabel.setText("");
+        }
     }
 
     private void setSrtContentAndPlay(SrtInfo srt)

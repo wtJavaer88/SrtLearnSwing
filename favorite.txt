@@ -5,3 +5,4 @@
 2016-09-19 14:08:32 "Friends.S01\S01E01.ass" tag<normal> [SrtInfo [fromTime=00:00:02,580, toTime=00:00:06,200, srtIndex=1, chs=《老友记》  第一季  第1集  序集, eng=Friends S01E01: The Pilot ]]
 2016-09-19 14:13:14 "Friends.S01\S01E01.ass" tag<normal> [SrtInfo [fromTime=00:00:12,370, toTime=00:00:16,540, srtIndex=3, chs=? Your job's a joke you're broke your love life's D.O.A., eng=? 上班受罪  口袋空空  爱情变累赘 ]]
 2016-09-19 14:15:00 "Friends.S01\S01E01.ass" tag<normal> [SrtInfo [fromTime=00:00:23,820, toTime=00:00:26,820, srtIndex=6, chs=? your week your month or even your year, eng=? 时运不济  活着受罪 ]]
+2016-09-19 14:33:25 "Friends.S01\S01E01.ass" tag<normal> [SrtInfo [fromTime=00:00:17,450, toTime=00:00:21,260, srtIndex=4, chs=? It's like you're always stuck in second gear, eng=? 寂寞又潦倒  受气又受累 ]]

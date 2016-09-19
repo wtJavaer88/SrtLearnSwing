@@ -1,5 +1,6 @@
 package srt;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,8 @@ public class SrtPlayService
         mfav.setFromTimeStr(currentPlaySrtInfos.get(0).getFromTime().toString());
         mfav.setToTimeStr(currentPlaySrtInfos
                 .get(currentPlaySrtInfos.size() - 1).getFromTime().toString());
-        mfav.setSrtFile(getCurFile().replace(MyAppParams.SRT_FOLDER, ""));
+        mfav.setSrtFile(getCurFile().replace(MyAppParams.SRT_FOLDER, "")
+                .replace(File.separator, "/"));
         mfav.setHasChild(currentPlaySrtInfos.size());
         mfav.setTag(getTag().replace("tag<", "").replace(">", ""));
 

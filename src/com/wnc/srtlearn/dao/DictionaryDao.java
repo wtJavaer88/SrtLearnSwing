@@ -2,8 +2,10 @@ package com.wnc.srtlearn.dao;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import translate.bean.WordExchange;
 
@@ -17,7 +19,7 @@ import db.DbFieldSqlUtil;
 
 public class DictionaryDao
 {
-    static List<Topic> topics = new ArrayList<Topic>();
+    static Set<Topic> topics = new HashSet<Topic>();
     static
     {
         DbExecMgr.refreshCon(DataSource.DICTIONARY);
@@ -48,21 +50,23 @@ public class DictionaryDao
         }
     }
 
-    public static Topic getCETTopic(String dialog)
+    public static Set<Topic> getCETTopic(String dialog)
     {
+        Set<Topic> result = new HashSet<Topic>();
         for (Topic topic : topics)
         {
             String trim = topic.getTopic_word().trim();
-            String[] splites = dialog.split(" ");
+            String[] splites = dialog.split("[ ,\\.]");
             for (String s : splites)
             {
                 if(s.equalsIgnoreCase(trim))
                 {
-                    return topic;
+                    // return topic;
+                    result.add(topic);
                 }
             }
         }
-        return null;
+        return result;
     }
 
     private static List<Topic> getExchangeTopics(Map rowMap)

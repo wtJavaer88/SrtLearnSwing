@@ -1,5 +1,7 @@
 package test;
 
+import java.util.Set;
+
 import com.wnc.basic.BasicRunTimeUtil;
 import com.wnc.srtlearn.dao.DictionaryDao;
 import com.wnc.srtlearn.dao.Topic;
@@ -10,9 +12,9 @@ public class DictDaoTest
     {
         BasicRunTimeUtil basicRunTimeUtil = new BasicRunTimeUtil("");
         basicRunTimeUtil.beginRun();
-        Topic topic = DictionaryDao
+        Set<Topic> topics = DictionaryDao
                 .getCETTopic("abiding you despite the damages");
-        System.out.println("find:" + topic);
+        System.out.println("find:" + topics);
         basicRunTimeUtil.finishRun();
         System.out.println(basicRunTimeUtil.getRunMilliSecond());
     }

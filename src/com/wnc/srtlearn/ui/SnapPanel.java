@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -24,8 +25,10 @@ import srt.SrtInfo;
 import srt.SrtPlayService;
 import srt.SrtTextHelper;
 import srt.TimeHelper;
+import translate.site.iciba.CibaWordTranslate;
 
 import com.wnc.basic.BasicFileUtil;
+import com.wnc.run.RunCmd;
 import com.wnc.srtlearn.dao.DictionaryDao;
 import com.wnc.srtlearn.dao.FavDao;
 import com.wnc.srtlearn.dao.Topic;
@@ -107,6 +110,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         area.setLineWrap(true); // 激活自动换行功能
         area.setWrapStyleWord(true); // 激活断行不断字功能
         area.setFont(font);
+        area.setEditable(false);
         return area;
     }
 
@@ -124,7 +128,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         snapBt.setBounds(450, 120, 100, 30);
 
         processLabel.setBounds(50, 160, 300, 30);
-        dictLabel.setBounds(480, 160, 300, 300);
+        dictLabel.setBounds(480, 160, 300, 400);
 
         jtaEng.setBounds(50, 200, 400, 90);
         jtaChs.setBounds(50, 300, 400, 90);
@@ -163,7 +167,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             public void mouseClicked(MouseEvent arg0)
             {
                 JFileChooser fChooser = new JFileChooser(
-                        "D:\\Users\\wnc\\oral\\字幕\\Transformers.Prime.S01\\");
+                        "D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\");
                 fChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         "Srt Files", "srt", "ass", "cnpy", "lrc", "saa");
@@ -235,6 +239,39 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             }
         });
 
+        jtaEng.addMouseListener(new MouseAdapter()
+        {
+
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if(e.getClickCount() == 1)
+                {
+
+                }
+                if(e.getClickCount() == 2)
+                {// 双击
+                    int start = jtaEng.getSelectionStart();
+                    int end = jtaEng.getSelectionEnd();
+                    final String selWord = jtaEng.getText().substring(start,
+                            end);
+                    System.out.println("双击选词:" + selWord);
+                    new Thread(new Runnable()
+                    {
+
+                        @Override
+                        public void run()
+                        {
+                            RunCmd.runCommand("\"C:\\Program Files\\Internet Explorer\\iexplore.exe\" "
+                                    + "\""
+                                    + new CibaWordTranslate(selWord)
+                                            .getWebUrlForPC() + "\"");
+                        }
+                    }).start();
+
+                }
+            }
+        });
     }
 
     public void clickPlayBtn()
@@ -299,24 +336,29 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
 
     private void genetateDict(SrtInfo srtInfo)
     {
-        Topic topic = DictionaryDao.getCETTopic(srtInfo.getEng());
-        if(topic != null)
+        Set<Topic> topics = DictionaryDao.getCETTopic(srtInfo.getEng());
+        if(topics.size() > 0)
         {
             StringBuilder accum = new StringBuilder(128);
             accum.append("<html>");
-            accum.append(topic.getTopic_word());
-            accum.append("<br>");
-            if(!topic.getTopic_base_word().equals(topic.getTopic_word()))
+            for (Topic topic : topics)
             {
-                accum.append("<font color=\"red\">");
-                accum.append("原型:" + topic.getTopic_base_word());
+                accum.append(topic.getTopic_word());
+                if(!topic.getTopic_base_word().equals(topic.getTopic_word()))
+                {
+                    accum.append("<font color=\"red\">");
+                    accum.append(" (原型:" + topic.getTopic_base_word() + ")");
+                    accum.append("</font>");
+                }
+                accum.append("<br>");
+                accum.append(topic.getMean_cn());
+                accum.append("<br>");
+                accum.append("<font size=\"3\" color=\"red\">");
+                accum.append(topic.getBookName());
                 accum.append("</font>");
                 accum.append("<br>");
+                accum.append("<br>");
             }
-            accum.append(topic.getMean_cn());
-            accum.append("<br>");
-            accum.append("<br>");
-            accum.append(topic.getBookName());
             accum.append("</html>");
             this.dictLabel.setText(accum.toString());
         }

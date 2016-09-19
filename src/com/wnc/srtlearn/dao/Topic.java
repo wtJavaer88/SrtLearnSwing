@@ -77,4 +77,30 @@ public class Topic
     {
         this.state = state;
     }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((topic_word == null) ? 0 : topic_word.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(this == obj)
+            return true;
+        if(obj == null)
+            return false;
+        if(getClass() != obj.getClass())
+            return false;
+        Topic other = (Topic) obj;
+        if(!topic_word.equals(other.topic_word))
+            return false;
+
+        return true;
+    }
 }

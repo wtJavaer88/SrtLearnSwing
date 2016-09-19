@@ -80,16 +80,13 @@ public final class DBconnectionMgr
             {
                 _$1.error("getConnection()  initConnection is Err.");
                 localConnection2 = null;
-                System.out.println("#1");
                 return localConnection2;
             }
 
             if(_$vector.size() > 0)
             {
-                System.out.println("#2");
                 while (_$vector.size() > _$9)
                 {
-                    System.out.println("#3");
                     Connection localConnection3 = (Connection) _$vector
                             .remove(0);
                     try
@@ -120,7 +117,6 @@ public final class DBconnectionMgr
 
                 if(((localConnection1 = (Connection) _$vector.remove(0)) != null))
                 {
-                    System.out.println("#4" + localConnection1);
                 }
 
                 localConnection2 = localConnection1;
@@ -457,7 +453,6 @@ public final class DBconnectionMgr
         if(!_$vectors.containsKey(paramString))
             _$vectors.put(paramString, new Vector());
         _$vector = _$vectors.get(paramString);
-        System.out.println(paramString + " " + _$vector);
     }
 
     public static void setMaxIdelNumber(int paramInt)

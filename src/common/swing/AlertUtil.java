@@ -41,7 +41,6 @@ public class AlertUtil
                 {
                     e.printStackTrace();
                 }
-                System.out.println("Over");
                 dialog.dispose();
             }
 

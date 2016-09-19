@@ -29,23 +29,10 @@ public class SrtPlayService
         this.sBaseLearn = sBaseLearn;
     }
 
-    public void favorite()
+    public boolean favorite()
     {
+
         List<SrtInfo> currentPlaySrtInfos = getCurrentPlaySrtInfos();
-
-        if(writeFavoritetxt(currentPlaySrtInfos)
-                && saveFavDb(currentPlaySrtInfos))
-        {
-            AlertUtil.showLongToast("收藏成功!");
-        }
-        else
-        {
-            AlertUtil.showLongToast("收藏失败!");
-        }
-    }
-
-    private boolean saveFavDb(List<SrtInfo> currentPlaySrtInfos)
-    {
         FavoriteMultiSrt mfav = new FavoriteMultiSrt();
         mfav.setFavTime(BasicDateUtil.getCurrentDateTimeString());
         mfav.setFromTimeStr(currentPlaySrtInfos.get(0).getFromTime().toString());
@@ -53,7 +40,30 @@ public class SrtPlayService
                 .get(currentPlaySrtInfos.size() - 1).getFromTime().toString());
         mfav.setSrtFile(getCurFile().replace(MyAppParams.SRT_FOLDER, ""));
         mfav.setHasChild(currentPlaySrtInfos.size());
+        mfav.setTag(getTag().replace("tag<", "").replace(">", ""));
 
+        if(FavDao.isExistMulti(mfav))
+        {
+            AlertUtil.showLongToast("已经收藏过了!");
+            return true;
+        }
+
+        if(writeFavoritetxt(currentPlaySrtInfos)
+                && saveFavDb(mfav, currentPlaySrtInfos))
+        {
+            AlertUtil.showLongToast("收藏成功!");
+            return true;
+        }
+        else
+        {
+            AlertUtil.showLongToast("收藏失败!");
+            return false;
+        }
+    }
+
+    private boolean saveFavDb(FavoriteMultiSrt mfav,
+            List<SrtInfo> currentPlaySrtInfos)
+    {
         List<FavoriteSingleSrt> sfavs = new ArrayList<FavoriteSingleSrt>();
         for (SrtInfo srtInfo : currentPlaySrtInfos)
         {
@@ -64,10 +74,6 @@ public class SrtPlayService
             sfav.setEng(srtInfo.getEng());
             sfav.setChs(srtInfo.getChs());
             sfavs.add(sfav);
-        }
-        if(FavDao.isExistMulti(mfav))
-        {
-            return true;
         }
         return FavDao.insertFavMulti(mfav, sfavs);
     }
@@ -125,6 +131,15 @@ public class SrtPlayService
 
     public String getFavoriteCurrContent(List<SrtInfo> currentPlaySrtInfos)
     {
+        String tag = getTag();
+
+        return BasicDateUtil.getCurrentDateTimeString() + " \""
+                + getCurFile().replace(MyAppParams.SRT_FOLDER, "") + "\" "
+                + tag + " " + currentPlaySrtInfos + "\r\n";
+    }
+
+    private String getTag()
+    {
         String tag = "tag<";
         if(isReplayRunning())
         {
@@ -136,10 +151,7 @@ public class SrtPlayService
         }
 
         tag += ">";
-
-        return BasicDateUtil.getCurrentDateTimeString() + " \""
-                + getCurFile().replace(MyAppParams.SRT_FOLDER, "") + "\" "
-                + tag + " " + currentPlaySrtInfos + "\r\n";
+        return tag;
     }
 
     public void showNewSrtFile(String srtFile)

@@ -1,138 +1,98 @@
 package com.wnc.srtlearn.dao;
 
-import java.awt.Cursor;
+import java.sql.SQLException;
 import java.util.List;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 import srt.SrtInfo;
 
 import com.wnc.srtlearn.pojo.FavoriteMultiSrt;
 import com.wnc.srtlearn.pojo.FavoriteSingleSrt;
+import common.utils.UUIDUtil;
+
+import db.DataSource;
+import db.DbExecMgr;
+import db.DbField;
+import db.DbFieldSqlUtil;
 
 public class FavDao
 {
 
     public static boolean isExistSingle(SrtInfo mfav, String srtFile)
     {
-        // try
-        // {
-        // Cursor c = db
-        // .rawQuery(
-        // "SELECT * FROM FAV_MULTI M LEFT JOIN FAV_SINGLE S ON M.ID=S.PID  WHERE SRTFILE=? AND S.FROM_TIME=? AND S.TO_TIME=?",
-        // new String[]
-        // { srtFile, mfav.getFromTime().toString(),
-        // mfav.getToTime().toString() });// 注意大小写
-        // if(c.moveToNext())
-        // {
-        // return true;
-        // }
-        // c.close();
-        // }
-        // catch (Exception ex)
-        // {
-        // throw new RuntimeException(ex.getMessage());
-        // }
-        // finally
-        // {
-        // closeDb();
-        // }
-        return false;
+        DbExecMgr.refreshCon(DataSource.BUSINESS);
+        return DbExecMgr
+                .isExistData("SELECT * FROM FAV_MULTI M LEFT JOIN FAV_SINGLE S ON M.UUID=S.P_UUID  WHERE SRTFILE='"
+                        + srtFile
+                        + "' AND S.FROM_TIME='"
+                        + mfav.getFromTime().toString()
+                        + "' AND S.TO_TIME='"
+                        + mfav.getToTime().toString() + "'");
     }
 
     public static boolean isExistMulti(FavoriteMultiSrt mfav)
     {
-        // initDb(context);
-        // try
-        // {
-        // Cursor c = db
-        // .rawQuery(
-        // "SELECT * FROM FAV_MULTI WHERE SRTFILE=? AND FROM_TIME=? AND TO_TIME=?",
-        // new String[]
-        // { mfav.getSrtFile(), mfav.getFromTimeStr(),
-        // mfav.getToTimeStr() });// 注意大小写
-        // if(c.moveToNext())
-        // {
-        // return true;
-        // }
-        // c.close();
-        // }
-        // catch (Exception ex)
-        // {
-        // throw new RuntimeException(ex.getMessage());
-        // }
-        // finally
-        // {
-        // closeDb();
-        // }
-        return false;
+        DbExecMgr.refreshCon(DataSource.BUSINESS);
+        DbFieldSqlUtil util = new DbFieldSqlUtil("FAV_MULTI", "");
+        util.addWhereField(new DbField("SRTFILE", mfav.getSrtFile()));
+        util.addWhereField(new DbField("FROM_TIME", mfav.getFromTimeStr()));
+        util.addWhereField(new DbField("TO_TIME", mfav.getToTimeStr()));
+        return DbExecMgr.isExistData(util.getSelectSql());
     }
 
     public static boolean insertFavMulti(FavoriteMultiSrt mfav,
             List<FavoriteSingleSrt> sfavs)
     {
-        // try
-        // {
-        // initDb(context);
-        // db.execSQL(
-        // "INSERT INTO FAV_MULTI(FAV_TIME,SRTFILE,FROM_TIME ,TO_TIME,HAS_CHILD,TAG) VALUES (?,?,?,?,?,?)",
-        // new Object[]
-        // { mfav.getFavTimeStr(), mfav.getSrtFile(),
-        // mfav.getFromTimeStr(), mfav.getToTimeStr(),
-        // mfav.getHasChild(), mfav.getTag() });
-        // Cursor c = db.rawQuery("SELECT MAX(ID) MAXID FROM FAV_MULTI",
-        // null);// 注意大小写
-        // int mfav_Id = 0;
-        // if(c.moveToNext())
-        // {
-        // mfav_Id = BasicNumberUtil.getNumber(getStrValue(c, "MAXID"));
-        // }
-        // c.close();
-        // if(mfav_Id > 0)
-        // {
-        // return insertFavChilds(mfav_Id, sfavs);
-        // }
-        // }
-        // catch (Exception ex)
-        // {
-        // ex.printStackTrace();
-        // return false;
-        // }
-        // finally
-        // {
-        // closeDb();
-        // }
-        return true;
+        DbExecMgr.refreshCon(DataSource.BUSINESS);
+        DbFieldSqlUtil util = new DbFieldSqlUtil("FAV_MULTI", "");
+        util.addInsertField(new DbField("SRTFILE", mfav.getSrtFile()));
+        String uuid = UUIDUtil.getUUID();
+        util.addInsertField(new DbField("UUID", uuid));
+        util.addInsertField(new DbField("FROM_TIME", mfav.getFromTimeStr()));
+        util.addInsertField(new DbField("TO_TIME", mfav.getToTimeStr()));
+        util.addInsertField(new DbField("FAV_TIME", mfav.getFavTimeStr()));
+        util.addInsertField(new DbField("HAS_CHILD", mfav.getHasChild() + "",
+                "NUMBER"));
+        util.addInsertField(new DbField("TAG", mfav.getTag()));
+        try
+        {
+            DbExecMgr.execOnlyOneUpdate(util.getInsertSql());
+            return insertFavChilds(uuid, sfavs);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    private static boolean insertFavChilds(int mfav_Id,
+    private static boolean insertFavChilds(String p_uuid,
             List<FavoriteSingleSrt> sfavs)
     {
-        // try
-        // {
-        // for (FavoriteSingleSrt sfav : sfavs)
-        // {
-        //
-        // db.execSQL(
-        // "INSERT INTO FAV_SINGLE(PID,SINDEX,FROM_TIME ,TO_TIME,ENG,CHS) VALUES (?,?,?,?,?,?)",
-        // new Object[]
-        // { mfav_Id, sfav.getsIndex(), sfav.getFromTimeStr(),
-        // sfav.getToTimeStr(),
-        // StringEscapeUtils.escapeSql(sfav.getEng()),
-        // StringEscapeUtils.escapeSql(sfav.getChs()) });
-        //
-        // }
-        // }
-        // catch (SQLException e)
-        // {
-        // e.printStackTrace();
-        // return false;
-        // }
+        for (FavoriteSingleSrt sfav : sfavs)
+        {
+            DbExecMgr.refreshCon(DataSource.BUSINESS);
+            DbFieldSqlUtil util = new DbFieldSqlUtil("FAV_SINGLE", "");
+            util.addInsertField(new DbField("P_UUID", p_uuid));
+            util.addInsertField(new DbField("FROM_TIME", sfav.getFromTimeStr()));
+            util.addInsertField(new DbField("TO_TIME", sfav.getToTimeStr()));
+            util.addInsertField(new DbField("SINDEX", sfav.getsIndex() + "",
+                    "NUMBER"));
+            util.addInsertField(new DbField("ENG", StringEscapeUtils
+                    .escapeSql(sfav.getEng())));
+            util.addInsertField(new DbField("CHS", StringEscapeUtils
+                    .escapeSql(sfav.getChs())));
+            try
+            {
+                DbExecMgr.execOnlyOneUpdate(util.getInsertSql());
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+                return false;
+            }
+        }
         return true;
     }
-
-    private static String getStrValue(Cursor c, String columnName)
-    {
-        return "";
-        // return c.getString(c.getColumnIndex(columnName));
-    }
-
 }

@@ -165,47 +165,6 @@ public class DbExecMgr
         return map;
     }
 
-    public static Map getSelectSqlMap(Connection con, String sql)
-    {
-        Statement statement = null;
-        Map map = new HashMap<Integer, String>();
-        if(BasicStringUtil.isNullString(sql))
-        {
-            return map;
-        }
-        try
-        {
-            statement = con.createStatement();
-            ResultSet set = statement.executeQuery(sql);
-            int i = 1;
-            while (set.next())
-            {
-                map.put(i, set.getString(1));
-                i++;
-            }
-            statement.close();
-        }
-        catch (SQLException e1)
-        {
-            System.out.println(e1.getMessage());
-            System.out.println(e1.getStackTrace()[10].getFileName());
-            e1.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                statement.close();
-            }
-            catch (SQLException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return map;
-    }
-
     public static synchronized int execUpdate(Connection con, String sql)
             throws SQLException
     {
@@ -241,9 +200,10 @@ public class DbExecMgr
         return false;
     }
 
-    public static boolean isExistData(Connection con, String sql)
+    public static boolean isExistData(String sql)
     {
-        if(getSelectSqlMap(con, sql).size() > 0)
+        Map selectSqlMap = getSelectSqlMap(sql);
+        if(selectSqlMap.size() > 0)
         {
             return true;
         }

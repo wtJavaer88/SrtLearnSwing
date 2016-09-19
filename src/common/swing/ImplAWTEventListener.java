@@ -1,8 +1,9 @@
-package com.wnc.srtlearn.ui;
+package common.swing;
 
 import java.awt.AWTEvent;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
+
 
 public class ImplAWTEventListener implements AWTEventListener
 {

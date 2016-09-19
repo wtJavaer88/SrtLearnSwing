@@ -106,16 +106,16 @@ public class PlayThread extends Thread
     private long palyVoice()
     {
         final SrtInfo currentSrtInfo = DataHolder.getCurrent();
-        Queue<String> srtVoicesWithBg = SrtTextHelper.getSrtVoicesInRange(
-                DataHolder.getFileKey(), currentSrtInfo.getFromTime()
-                        .toString(), currentSrtInfo.getToTime().toString());
         long curSrtduration = TimeHelper.getTime(currentSrtInfo.getToTime())
                 - TimeHelper.getTime(currentSrtInfo.getFromTime());
         long voiceDuration = VOICE_PLAY_DELAY + curSrtduration;
+        Queue<String> srtVoicesWithBg = SrtTextHelper.getSrtVoicesInRange(
+                DataHolder.getFileKey(), currentSrtInfo.getFromTime()
+                        .toString(), currentSrtInfo.getToTime().toString());
 
         try
         {
-            if(!SrtSetting.isPlayVoice())
+            if(!SrtSetting.isPlayVoice() || srtVoicesWithBg.isEmpty())
             {
                 return voiceDuration;
             }

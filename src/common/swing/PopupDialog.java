@@ -18,7 +18,6 @@ public class PopupDialog extends JDialog implements ActionListener
     public PopupDialog(String title, String text)
     {
         super(new Frame(""), title, true);// Create a framer
-        System.out.println("gouzao ");
         setSize(300, 140);
         setResizable(false);
         setLocation(240, 240);
@@ -40,7 +39,6 @@ public class PopupDialog extends JDialog implements ActionListener
     @Override
     public void actionPerformed(ActionEvent arg0)
     {
-        System.out.println("dispose");
         this.dispose();
     }
 

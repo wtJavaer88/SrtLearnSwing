@@ -1,4 +1,4 @@
-package com.wnc.srtlearn.ui;
+package common.swing;
 
 
 public abstract interface INewFrame

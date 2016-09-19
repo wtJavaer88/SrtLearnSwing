@@ -1,0 +1,7 @@
+2016-09-19 10:36:37 "Gravity.Falls.S02\S02E01.ass" tag<normal> [SrtInfo [fromTime=00:00:26,990, toTime=00:00:30,220, srtIndex=5, chs=整整三十年的心血终于有了回报, eng=Thirty long years and it's all led up to this. ]]
+2016-09-19 10:40:25 "Gravity.Falls.S02\S02E01.ass" tag<normal> [SrtInfo [fromTime=00:00:26,990, toTime=00:00:30,220, srtIndex=5, chs=整整三十年的心血终于有了回报, eng=Thirty long years and it's all led up to this. ]]
+2016-09-19 10:40:38 "Gravity.Falls.S02\S02E01.ass" tag<normal> [SrtInfo [fromTime=00:00:33,130, toTime=00:00:34,970, srtIndex=7, chs=可能应该穿条长裤, eng=Probably should have worn pants. ]]
+2016-09-19 14:08:19 "Friends.S01\S01E01.ass" tag<normal> [SrtInfo [fromTime=00:00:02,580, toTime=00:00:06,200, srtIndex=1, chs=《老友记》  第一季  第1集  序集, eng=Friends S01E01: The Pilot ]]
+2016-09-19 14:08:32 "Friends.S01\S01E01.ass" tag<normal> [SrtInfo [fromTime=00:00:02,580, toTime=00:00:06,200, srtIndex=1, chs=《老友记》  第一季  第1集  序集, eng=Friends S01E01: The Pilot ]]
+2016-09-19 14:13:14 "Friends.S01\S01E01.ass" tag<normal> [SrtInfo [fromTime=00:00:12,370, toTime=00:00:16,540, srtIndex=3, chs=? Your job's a joke you're broke your love life's D.O.A., eng=? 上班受罪  口袋空空  爱情变累赘 ]]
+2016-09-19 14:15:00 "Friends.S01\S01E01.ass" tag<normal> [SrtInfo [fromTime=00:00:23,820, toTime=00:00:26,820, srtIndex=6, chs=? your week your month or even your year, eng=? 时运不济  活着受罪 ]]

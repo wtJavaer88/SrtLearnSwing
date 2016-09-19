@@ -12,17 +12,25 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import srt.DataHolder;
 import srt.SRT_VIEW_TYPE;
 import srt.SrtInfo;
 import srt.SrtPlayService;
+import srt.SrtTextHelper;
+import srt.TimeHelper;
 
 import com.wnc.srtlearn.dao.FavDao;
 import common.swing.AlertUtil;
+import common.swing.INewFrame;
+import common.swing.ImplAWTEventListener;
+import common.swing.KeyCallBack;
+import common.swing.SnapUtil;
 import common.uihelper.MyAppParams;
 import common.utils.TextFormatUtil;
 
@@ -34,10 +42,15 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     JButton startBt;// 开始
     JButton nextBt;// 下一个
     JButton preBt;// 上一个
+    JButton favoriteBt;// 收藏
+    JButton snapBt;// 截图
     JCheckBox unComplete;
+
+    JLabel processLabel;
+
     public JTextField jtfSrtFile;
-    public JTextArea jtfEng;
-    public JTextArea jtfChs;
+    public JTextArea jtaEng;
+    public JTextArea jtaChs;
 
     private final String SRT_PLAY_TEXT = "播放";
     private final String SRT_STOP_TEXT = "停止";
@@ -53,7 +66,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         tk.addAWTEventListener(new ImplAWTEventListener(this),
                 AWTEvent.KEY_EVENT_MASK);
 
-        enter("D:\\Users\\wnc\\oral\\字幕\\Gravity.Falls.S02\\S02E01.ass");
+        enter("D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\S01E01.ass");
     }
 
     @Override
@@ -63,52 +76,67 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         chooseBt = new JButton("选择字幕");// 选择
         startBt = new JButton("Start!");// 开始
         nextBt = new JButton("Next");// 下一个
-        preBt = new JButton("Pre");// 下一个
+        preBt = new JButton("Pre");// 上一个
+        favoriteBt = new JButton("喜欢");
+        snapBt = new JButton("截图");
+        processLabel = new JLabel();// 进度标签
+
         jtfSrtFile = new JTextField(200);
-        jtfEng = new JTextArea("", 20, 60);
-        jtfChs = new JTextArea("", 20, 60);
-        jtfEng.setSelectedTextColor(Color.RED);
-        jtfEng.setLineWrap(true); // 激活自动换行功能
-        jtfEng.setWrapStyleWord(true); // 激活断行不断字功能
-        jtfChs.setSelectedTextColor(Color.RED);
-        jtfChs.setLineWrap(true); // 激活自动换行功能
-        jtfChs.setWrapStyleWord(true); // 激活断行不断字功能
-
-        Font font = new Font("宋体", Font.PLAIN, 18);
-        jtfEng.setFont(font);
-        jtfChs.setFont(font);
-
+        jtfSrtFile.setToolTipText("请选择一集字幕，或者手动拖拽！");
+        jtaEng = getTextArea();
+        jtaChs = getTextArea();
         // 创建复选框按键，并设置快捷键，和选定
         unComplete = new JCheckBox("unComplete");
         unComplete.setMnemonic(KeyEvent.VK_C);
-        jtfSrtFile.setToolTipText("请选择一集字幕，或者手动拖拽！");
+    }
+
+    public JTextArea getTextArea()
+    {
+        JTextArea area = new JTextArea("", 20, 80);
+        area = new JTextArea("", 20, 80);
+        area.setSelectedTextColor(Color.RED);
+        area.setLineWrap(true); // 激活自动换行功能
+        area.setWrapStyleWord(true); // 激活断行不断字功能
+        Font font = new Font("微软雅黑", Font.BOLD, 20);
+        area.setFont(font);
+        return area;
     }
 
     @Override
     public void setBounds()
     {
         chooseBt.setBounds(50, 50, 100, 30);
-        unComplete.setBounds(170, 50, 120, 30);
-        startBt.setBounds(50, 150, 100, 30);
-        preBt.setBounds(150, 150, 100, 30);
-        nextBt.setBounds(250, 150, 100, 30);
-        jtfSrtFile.setBounds(50, 100, 300, 30);
-        jtfEng.setBounds(50, 200, 300, 60);
-        jtfChs.setBounds(50, 260, 300, 60);
+        jtfSrtFile.setBounds(160, 50, 300, 30);
+        // unComplete.setBounds(170, 50, 120, 30);
+
+        startBt.setBounds(50, 120, 100, 30);
+        preBt.setBounds(150, 120, 100, 30);
+        nextBt.setBounds(250, 120, 100, 30);
+        favoriteBt.setBounds(350, 120, 100, 30);
+        snapBt.setBounds(450, 120, 100, 30);
+
+        processLabel.setBounds(50, 160, 300, 30);
+
+        jtaEng.setBounds(50, 200, 400, 90);
+        jtaChs.setBounds(50, 300, 400, 90);
     }
 
     @Override
     public void addComp()
     {
-        this.add(unComplete);
+        // this.add(unComplete);
         this.add(chooseBt);
         this.add(startBt);
         this.add(nextBt);
         this.add(preBt);
+        this.add(favoriteBt);
+        this.add(snapBt);
+
+        this.add(processLabel);
+
         this.add(jtfSrtFile);
-        this.add(jtfEng);
-        this.add(jtfChs);
-        // this.add(tareaTest);
+        this.add(jtaEng);
+        this.add(jtaChs);
     }
 
     public boolean getIfComplet()
@@ -125,8 +153,8 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             public void mouseClicked(MouseEvent arg0)
             {
                 JFileChooser fChooser = new JFileChooser(
-                        "D:\\Users\\wnc\\oral\\字幕\\");
-                fChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                        "D:\\Users\\wnc\\oral\\字幕\\Transformers.Prime.S01\\");
+                fChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         "Srt Files", "srt", "ass", "cnpy", "lrc", "saa");
                 fChooser.setFileFilter(filter);
@@ -134,8 +162,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
 
                 fChooser.showOpenDialog(null);
                 File tmpFile = fChooser.getSelectedFile();
-
-                jtfSrtFile.setText(tmpFile.getAbsolutePath());
+                enter(tmpFile.getAbsolutePath());
             }
 
         });
@@ -165,6 +192,29 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             }
 
         });
+        favoriteBt.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent arg0)
+            {
+                boolean favorite = srtPlayService.favorite();
+                if(favorite)
+                {
+                    favoriteBt.setForeground(Color.RED);
+                }
+            }
+        });
+        snapBt.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent arg0)
+            {
+                int time = 1 + (int) (TimeHelper.getTime(DataHolder
+                        .getCurrent().getFromTime()) / 1000);
+                String file = DataHolder.getFileKey();
+                SnapUtil.getSnapPic(time, file);
+            }
+        });
 
     }
 
@@ -188,12 +238,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
 
     private void enter(String srtFilePath)
     {
-        // Picker picker = PickerFactory.getPicker(srtFilePath);
-        // int srtLineCounts = picker.getSrtLineCounts();
-        // System.out.println(srtLineCounts);
-        // System.out.println(picker.getSrtInfos(0, srtLineCounts));
         this.jtfSrtFile.setText(srtFilePath);
-
         srtPlayService.showNewSrtFile(srtFilePath);
     }
 
@@ -221,7 +266,6 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     @Override
     public void stopSrtPlay()
     {
-        System.out.println("Srt停止播放...");
         startBt.setText(SRT_PLAY_TEXT);
         srtPlayService.stopSrt();
     }
@@ -246,9 +290,11 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
                 .replace(MyAppParams.SRT_FOLDER, ""));
         if(exist)
         {
+            favoriteBt.setForeground(Color.RED);
         }
         else
         {
+            favoriteBt.setForeground(Color.BLACK);
         }
     }
 
@@ -260,27 +306,22 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         if(TextFormatUtil.containsChinese(srt.getEng())
                 && !TextFormatUtil.containsChinese(srt.getChs()))
         {
-            jtfChs.setText(srt.getEng() == null ? "NULL" : srt.getEng());
-            jtfEng.setText(srt.getChs() == null ? "NULL" : srt.getChs());
+            jtaChs.setText(srt.getEng() == null ? "NULL" : srt.getEng());
+            jtaEng.setText(srt.getChs() == null ? "NULL" : srt.getChs());
         }
         else
         {
-            // System.out.println("setContent:" + srt);
-            jtfChs.setText(srt.getChs() == null ? "NULL" : srt.getChs());
-            jtfEng.setText(srt.getEng() == null ? "NULL" : srt.getEng());
+            jtaChs.setText(srt.getChs() == null ? "NULL" : srt.getChs());
+            jtaEng.setText(srt.getEng() == null ? "NULL" : srt.getEng());
         }
         if(srt.getFromTime() != null && srt.getToTime() != null)
         {
-            // timelineTv.setText(SrtTextHelper.concatTimeline(srt.getFromTime(),
-            // srt.getToTime()));
-
             defaultTimePoint[0] = srt.getFromTime().getHour();
             defaultTimePoint[1] = srt.getFromTime().getMinute();
             defaultTimePoint[2] = srt.getFromTime().getSecond();
         }
-        System.out.println("进度:" + srtPlayService.getPleyProgress());
-        // ((TextView) findViewById(R.id.progress_tv)).setText(srtPlayService
-        // .getPleyProgress());
+        processLabel.setText(SrtTextHelper.concatTimeline(srt.getFromTime(),
+                srt.getToTime()) + "  " + srtPlayService.getPleyProgress());
     }
 
     @Override

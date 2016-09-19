@@ -2,7 +2,7 @@ package common.utils;
 
 import java.util.UUID;
 
-public final class GeneratorUtil
+public final class UUIDUtil
 {
 
     /**

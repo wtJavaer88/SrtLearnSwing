@@ -10,8 +10,9 @@ public class DictDaoTest
     {
         BasicRunTimeUtil basicRunTimeUtil = new BasicRunTimeUtil("");
         basicRunTimeUtil.beginRun();
-        Topic topic = DictionaryDao.getCETTopic("you despite the damages");
-        System.out.println(topic);
+        Topic topic = DictionaryDao
+                .getCETTopic("abiding you despite the damages");
+        System.out.println("find:" + topic);
         basicRunTimeUtil.finishRun();
         System.out.println(basicRunTimeUtil.getRunMilliSecond());
     }

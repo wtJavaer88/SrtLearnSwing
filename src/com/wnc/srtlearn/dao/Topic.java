@@ -2,10 +2,12 @@ package com.wnc.srtlearn.dao;
 
 public class Topic
 {
+    private String topic_base_word;
     private String bookName;
     private String topic_id;
     private String topic_word;
     private String mean_cn;
+    private String state;
 
     public String getBookName()
     {
@@ -50,7 +52,29 @@ public class Topic
     @Override
     public String toString()
     {
-        return "Topic [bookName=" + bookName + ", topic_id=" + topic_id
-                + ", topic_word=" + topic_word + ", mean_cn=" + mean_cn + "]";
+        return "Topic [topic_base_word=" + topic_base_word + ", bookName="
+                + bookName + ", topic_id=" + topic_id + ", topic_word="
+                + topic_word + ", mean_cn=" + mean_cn + ", state=" + state
+                + "]";
+    }
+
+    public String getTopic_base_word()
+    {
+        return topic_base_word;
+    }
+
+    public void setTopic_base_word(String topic_base_word)
+    {
+        this.topic_base_word = topic_base_word;
+    }
+
+    public String getState()
+    {
+        return state;
+    }
+
+    public void setState(String state)
+    {
+        this.state = state;
     }
 }

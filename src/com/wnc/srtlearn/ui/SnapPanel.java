@@ -124,7 +124,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         snapBt.setBounds(450, 120, 100, 30);
 
         processLabel.setBounds(50, 160, 300, 30);
-        dictLabel.setBounds(480, 160, 300, 240);
+        dictLabel.setBounds(480, 160, 300, 300);
 
         jtaEng.setBounds(50, 200, 400, 90);
         jtaChs.setBounds(50, 300, 400, 90);
@@ -306,6 +306,13 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             accum.append("<html>");
             accum.append(topic.getTopic_word());
             accum.append("<br>");
+            if(!topic.getTopic_base_word().equals(topic.getTopic_word()))
+            {
+                accum.append("<font color=\"red\">");
+                accum.append("原型:" + topic.getTopic_base_word());
+                accum.append("</font>");
+                accum.append("<br>");
+            }
             accum.append(topic.getMean_cn());
             accum.append("<br>");
             accum.append("<br>");

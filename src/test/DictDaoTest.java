@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.wnc.basic.BasicRunTimeUtil;
 import com.wnc.srtlearn.dao.DictionaryDao;
-import com.wnc.srtlearn.dao.Topic;
+import com.wnc.srtlearn.modules.translate.Topic;
 
 public class DictDaoTest
 {

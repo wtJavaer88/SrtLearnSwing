@@ -33,6 +33,7 @@ public class SrtVoiceHelper
 
     public synchronized static void play(final String voicePath)
     {
+        System.out.println("voicePath:" + voicePath);
         try
         {
             thread = new Thread(new Task(voicePath));

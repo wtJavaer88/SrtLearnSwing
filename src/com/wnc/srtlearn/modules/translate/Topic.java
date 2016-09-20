@@ -1,4 +1,4 @@
-package com.wnc.srtlearn.dao;
+package com.wnc.srtlearn.modules.translate;
 
 public class Topic
 {

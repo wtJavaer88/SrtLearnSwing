@@ -8,6 +8,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -33,9 +36,9 @@ import com.wnc.basic.BasicFileUtil;
 import com.wnc.run.RunCmd;
 import com.wnc.srtlearn.dao.DictionaryDao;
 import com.wnc.srtlearn.dao.FavDao;
-import com.wnc.srtlearn.dao.Topic;
 import com.wnc.srtlearn.ex.ReachFileTailException;
 import com.wnc.srtlearn.ex.SrtException;
+import com.wnc.srtlearn.modules.translate.Topic;
 import com.wnc.srtlearn.setting.SrtSetting;
 import common.swing.AlertUtil;
 import common.swing.INewFrame;
@@ -78,7 +81,8 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         tk.addAWTEventListener(new ImplAWTEventListener(this),
                 AWTEvent.KEY_EVENT_MASK);
 
-        enter("D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\S01E01.ass");
+        enter("D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\S01E24.ass");
+        System.out.println(getNextEp());
     }
 
     @Override
@@ -348,16 +352,25 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             if(SrtSetting.isAutoNextEP())
             {
                 final long tip_time = 2000;
-                AlertUtil.showShortToast("将为你自动播放下一集", tip_time);
-                try
+
+                String nextEp = getNextEp();
+                if(nextEp != null)
                 {
-                    TimeUnit.MILLISECONDS.sleep(tip_time);
+                    AlertUtil.showShortToast("将为你自动播放下一集", tip_time);
+                    try
+                    {
+                        TimeUnit.MILLISECONDS.sleep(tip_time);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    enter(nextEp);
                 }
-                catch (InterruptedException e)
+                else
                 {
-                    e.printStackTrace();
+                    AlertUtil.showLongToast("已经没有更多字幕了!");
                 }
-                enter(getNextEp());
             }
             else
             {
@@ -375,18 +388,23 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
 
     private String getNextEp()
     {
-        id++;
-        String next = id > 9 ? id + "" : "0" + id;
-        return ("D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\S01E" + (next) + ".ass");
-    }
-
-    int id = 1;
-
-    private void startNew()
-    {
-        String next = id > 9 ? id + "" : "0" + id;
-        id++;
-        enter("D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\S01E" + (next) + ".ass");
+        String srtFile = this.jtfSrtFile.getText();
+        File folder = new File(BasicFileUtil.getFileParent(srtFile));
+        folder.listFiles();
+        List<File> asList = Arrays.asList(folder.listFiles());
+        Collections.sort(asList);
+        for (int i = 0; i < asList.size(); i++)
+        {
+            String absolutePath = asList.get(i).getAbsolutePath();
+            if(absolutePath.equals(srtFile))
+            {
+                if(i < asList.size() - 1)
+                {
+                    return asList.get(i + 1).getAbsolutePath();
+                }
+            }
+        }
+        return null;
     }
 
     @Override

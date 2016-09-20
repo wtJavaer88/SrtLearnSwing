@@ -11,6 +11,7 @@ import translate.bean.WordExchange;
 
 import com.wnc.basic.BasicFileUtil;
 import com.wnc.basic.BasicStringUtil;
+import com.wnc.srtlearn.modules.translate.Topic;
 import com.wnc.string.PatternUtil;
 
 import db.DataSource;

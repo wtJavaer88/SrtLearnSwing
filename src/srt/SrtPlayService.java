@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit;
 import com.wnc.basic.BasicDateUtil;
 import com.wnc.basic.BasicFileUtil;
 import com.wnc.srtlearn.dao.FavDao;
+import com.wnc.srtlearn.ex.SrtException;
+import com.wnc.srtlearn.ex.SrtNotFoundException;
 import com.wnc.srtlearn.modules.srt.SrtVoiceHelper;
 import com.wnc.srtlearn.pojo.FavoriteMultiSrt;
 import com.wnc.srtlearn.pojo.FavoriteSingleSrt;
@@ -30,9 +32,8 @@ public class SrtPlayService
         this.sBaseLearn = sBaseLearn;
     }
 
-    public boolean favorite()
+    public boolean favorite() throws SrtException
     {
-
         List<SrtInfo> currentPlaySrtInfos = getCurrentPlaySrtInfos();
         FavoriteMultiSrt mfav = new FavoriteMultiSrt();
         mfav.setFavTime(BasicDateUtil.getCurrentDateTimeString());
@@ -87,7 +88,7 @@ public class SrtPlayService
                 favoriteCurrContent, "UTF-8", true);
     }
 
-    public SrtInfo getSrtInfo(SRT_VIEW_TYPE view_type)
+    public SrtInfo getSrtInfo(SRT_VIEW_TYPE view_type) throws SrtException
     {
         SrtInfo srt = null;
         switch (view_type)
@@ -156,7 +157,7 @@ public class SrtPlayService
         return tag;
     }
 
-    public void showNewSrtFile(String srtFile)
+    public void showNewSrtFile(String srtFile) throws SrtException
     {
         this.setReplayCtrl(false);
         this.setReplayIndex(-1, -1);
@@ -190,6 +191,7 @@ public class SrtPlayService
         else
         {
             Log.e("srt", "not found " + srtFile);
+            throw new SrtNotFoundException("找不到该文件的字幕!");
         }
     }
 
@@ -253,6 +255,9 @@ public class SrtPlayService
     {
         // 停止原有的播放线程,播放新字幕
         stopSrt();
+
+        System.gc();
+
         // 每次播放,先设置自动播放控制为true
         autoPlayNextCtrl = true;
         playThread = new PlayThread(this);
@@ -325,7 +330,7 @@ public class SrtPlayService
         this.beginReplayIndex = beginReplayIndex;
     }
 
-    public List<SrtInfo> getCurrentPlaySrtInfos()
+    public List<SrtInfo> getCurrentPlaySrtInfos() throws SrtException
     {
         if(isReplayRunning())
         {

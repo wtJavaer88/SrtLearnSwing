@@ -11,6 +11,7 @@ import translate.bean.WordExchange;
 
 import com.wnc.basic.BasicFileUtil;
 import com.wnc.basic.BasicStringUtil;
+import com.wnc.string.PatternUtil;
 
 import db.DataSource;
 import db.DbExecMgr;
@@ -53,19 +54,21 @@ public class DictionaryDao
     public static Set<Topic> getCETTopic(String dialog)
     {
         Set<Topic> result = new HashSet<Topic>();
+        List<String> splites = PatternUtil.getPatternStrings(dialog, "\\w+");
         for (Topic topic : topics)
         {
             String trim = topic.getTopic_word().trim();
-            String[] splites = dialog.split("[ ,\\.]");
+
             for (String s : splites)
             {
                 if(s.equalsIgnoreCase(trim))
                 {
-                    // return topic;
                     result.add(topic);
                 }
             }
         }
+        splites.clear();
+        splites = null;
         return result;
     }
 

@@ -14,40 +14,27 @@ public class SrtVoiceHelper
 {
     static Position curPosition = Position.NORMAL; // 声道
     static final int EXTERNAL_BUFFER_SIZE = 524288; // 128k
-    private static SourceDataLine auline;
 
     enum Position
     { // 声道
         LEFT, RIGHT, NORMAL
     };
 
-    public synchronized static void stop()
-    {
-        try
-        {
-            if(auline != null)
-            {
-                auline.stop();
-            }
-            if(thread != null)
-            {
-                thread.stop();
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("voiceStopEx." + e.getMessage());
-        }
-    }
-
     static Thread thread;
+
+    public static void stop()
+    {
+        if(thread != null)
+        {
+            thread.stop();
+        }
+        // do nothing to the player, because the Task has done before play
+    }
 
     public synchronized static void play(final String voicePath)
     {
         try
         {
-            stop();
-
             thread = new Thread(new Task(voicePath));
             thread.start();
         }
@@ -69,6 +56,7 @@ public class SrtVoiceHelper
         private AudioInputStream stream = null;
         private AudioFormat format = null;
         private Clip clip = null;
+        private static SourceDataLine auline;
 
         public Task(String fileName)
         {
@@ -80,11 +68,10 @@ public class SrtVoiceHelper
         {
             try
             {
+                stop();
                 File soundFile = new File(fileName); // 播放音乐的文件名
                 // From file
                 stream = AudioSystem.getAudioInputStream(soundFile);
-                // At present, ALAW and ULAW encodings must be converted
-                // to PCM_SIGNED before it can be played
                 format = stream.getFormat();
                 if(format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED)
                 {
@@ -99,6 +86,7 @@ public class SrtVoiceHelper
                 DataLine.Info info = new DataLine.Info(SourceDataLine.class,
                         stream.getFormat(), AudioSystem.NOT_SPECIFIED);
                 auline = (SourceDataLine) AudioSystem.getLine(info);
+                auline.open();
                 auline.open(stream.getFormat(), auline.getBufferSize());
                 auline.start();
                 int numRead = 0;
@@ -119,6 +107,23 @@ public class SrtVoiceHelper
             catch (Exception e)
             {
                 e.printStackTrace();
+            }
+        }
+
+        public void stop()
+        {
+            try
+            {
+                if(auline != null)
+                {
+                    auline.stop();
+                    auline.close();
+                }
+
+            }
+            catch (Exception e)
+            {
+                System.out.println("voiceStopEx." + e.getMessage());
             }
         }
 

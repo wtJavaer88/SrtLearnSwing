@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.wnc.basic.BasicFileUtil;
 import com.wnc.basic.BasicStringUtil;
+import com.wnc.srtlearn.ex.SrtException;
 import common.uihelper.MyAppParams;
 import common.utils.MyFileUtil;
 import common.utils.PinYinUtil;
@@ -135,8 +136,9 @@ public class SrtFilesAchieve
      * 
      * @param srtFile
      * @return
+     * @throws SrtException
      */
-    public static String getThumbPicPath(String srtFile)
+    public static String getThumbPicPath(String srtFile) throws SrtException
     {
         String filePath = MyAppParams.THUMB_PICFOLDER
                 + srtFile.replace(MyAppParams.SRT_FOLDER, "");
@@ -172,7 +174,7 @@ public class SrtFilesAchieve
         return filePath;
     }
 
-    private static String getWordPic(String filePath)
+    private static String getWordPic(String filePath) throws SrtException
     {
         SrtInfo current = DataHolder.getCurrent();
         String pic1 = filePath + File.separator

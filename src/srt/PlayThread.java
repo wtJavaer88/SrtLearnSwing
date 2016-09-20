@@ -2,6 +2,7 @@ package srt;
 
 import java.util.Queue;
 
+import com.wnc.srtlearn.ex.SrtException;
 import com.wnc.srtlearn.modules.srt.SrtVoiceHelper;
 import com.wnc.srtlearn.monitor.StudyMonitor;
 import com.wnc.srtlearn.monitor.work.ActiveWork;
@@ -25,10 +26,11 @@ public class PlayThread extends Thread
     {
         try
         {
+            final int SLEEP_TIME = 100;// 改小为10用于压力测试
+            // long voiceDuration = SLEEP_TIME;// 用于压力测试
             long voiceDuration = palyVoice();
 
             long beginTime = System.currentTimeMillis();
-            final int SLEEP_TIME = 100;
             ActiveWork work = StudyMonitor.peekWork(WORKTYPE.SRT);
             while (threadRunning)
             {
@@ -103,7 +105,7 @@ public class PlayThread extends Thread
         }
     }
 
-    private long palyVoice()
+    private long palyVoice() throws SrtException
     {
         final SrtInfo currentSrtInfo = DataHolder.getCurrent();
         long curSrtduration = TimeHelper.getTime(currentSrtInfo.getToTime())

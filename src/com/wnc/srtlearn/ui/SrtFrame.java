@@ -42,7 +42,8 @@ public class SrtFrame extends JFrame
         this.setResizable(true);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setTitle("电影预览生成器By~龙年生");
+        this.setTitle("美剧学习机By~龙年生");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// 关闭时退出进程
         this.setDropTarget(new DropTarget(this, DnDConstants.ACTION_REFERENCE,
                 new DropTargetAdapter()
                 {

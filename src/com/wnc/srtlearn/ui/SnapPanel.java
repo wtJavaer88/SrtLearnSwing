@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -20,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import srt.DataHolder;
+import srt.Log;
 import srt.SRT_VIEW_TYPE;
 import srt.SrtInfo;
 import srt.SrtPlayService;
@@ -32,6 +34,9 @@ import com.wnc.run.RunCmd;
 import com.wnc.srtlearn.dao.DictionaryDao;
 import com.wnc.srtlearn.dao.FavDao;
 import com.wnc.srtlearn.dao.Topic;
+import com.wnc.srtlearn.ex.ReachFileTailException;
+import com.wnc.srtlearn.ex.SrtException;
+import com.wnc.srtlearn.setting.SrtSetting;
 import common.swing.AlertUtil;
 import common.swing.INewFrame;
 import common.swing.ImplAWTEventListener;
@@ -90,7 +95,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         favoriteBt = new JButton("喜欢");
         snapBt = new JButton("截图");
         processLabel = new JLabel();// 进度标签
-        dictLabel = new JLabel("<html>hello <br> world!</html>");
+        dictLabel = new JLabel("");
         dictLabel.setFont(font);
 
         jtfSrtFile = new JTextField(200);
@@ -211,7 +216,15 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             @Override
             public void mouseClicked(MouseEvent arg0)
             {
-                boolean favorite = srtPlayService.favorite();
+                boolean favorite = false;
+                try
+                {
+                    favorite = srtPlayService.favorite();
+                }
+                catch (SrtException e)
+                {
+                    e.printStackTrace();
+                }
                 if(favorite)
                 {
                     favoriteBt.setForeground(Color.RED);
@@ -223,8 +236,18 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             @Override
             public void mouseClicked(MouseEvent arg0)
             {
-                int time = 1 + (int) (TimeHelper.getTime(DataHolder
-                        .getCurrent().getFromTime()) / 1000);
+                // 截图所处时间点
+                int time = 0;
+                try
+                {
+                    time = 1 + (int) (TimeHelper.getTime(DataHolder
+                            .getCurrent().getFromTime()) / 1000);
+                }
+                catch (SrtException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 String file = DataHolder.getFileKey();
                 String snapPic = SnapUtil.getSnapPic(time, file);
                 if(BasicFileUtil.isExistFile(snapPic)
@@ -295,7 +318,15 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     private void enter(String srtFilePath)
     {
         this.jtfSrtFile.setText(srtFilePath);
-        srtPlayService.showNewSrtFile(srtFilePath);
+        try
+        {
+            srtPlayService.showNewSrtFile(srtFilePath);
+        }
+        catch (SrtException e)
+        {
+            e.printStackTrace();
+            AlertUtil.showShortToast(e.getMessage());
+        }
     }
 
     protected SrtPlayService srtPlayService = new SrtPlayService(this);
@@ -312,11 +343,50 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             SrtInfo srt = srtPlayService.getSrtInfo(view_type);
             play(srt);
         }
+        catch (ReachFileTailException ex)
+        {
+            if(SrtSetting.isAutoNextEP())
+            {
+                final long tip_time = 2000;
+                AlertUtil.showShortToast("将为你自动播放下一集", tip_time);
+                try
+                {
+                    TimeUnit.MILLISECONDS.sleep(tip_time);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+                enter(getNextEp());
+            }
+            else
+            {
+                stopSrtPlay();
+                AlertUtil.showShortToast(ex.getMessage());
+            }
+        }
         catch (Exception ex)
         {
             stopSrtPlay();
-            AlertUtil.showShortToast(ex.getMessage());
+            // startNew();
+            Log.e("Panel", ex.getMessage());
         }
+    }
+
+    private String getNextEp()
+    {
+        id++;
+        String next = id > 9 ? id + "" : "0" + id;
+        return ("D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\S01E" + (next) + ".ass");
+    }
+
+    int id = 1;
+
+    private void startNew()
+    {
+        String next = id > 9 ? id + "" : "0" + id;
+        id++;
+        enter("D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\S01E" + (next) + ".ass");
     }
 
     @Override
@@ -346,7 +416,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
                 accum.append(topic.getTopic_word());
                 if(!topic.getTopic_base_word().equals(topic.getTopic_word()))
                 {
-                    accum.append("<font color=\"red\">");
+                    accum.append("<font size=\"3\" color=\"red\">");
                     accum.append(" (原型:" + topic.getTopic_base_word() + ")");
                     accum.append("</font>");
                 }
@@ -366,6 +436,8 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         {
             this.dictLabel.setText("");
         }
+        topics.clear();
+        topics = null;
     }
 
     private void setSrtContentAndPlay(SrtInfo srt)
@@ -405,7 +477,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
             jtaChs.setText(srt.getChs() == null ? "NULL" : srt.getChs());
             jtaEng.setText(srt.getEng() == null ? "NULL" : srt.getEng());
         }
-        if(srt.getFromTime() != null && srt.getToTime() != null)
+        if(srt.getFromTime() != null)
         {
             defaultTimePoint[0] = srt.getFromTime().getHour();
             defaultTimePoint[1] = srt.getFromTime().getMinute();

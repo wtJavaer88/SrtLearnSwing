@@ -8,8 +8,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -30,14 +28,14 @@ import srt.SrtInfo;
 import srt.SrtPlayService;
 import srt.SrtTextHelper;
 import srt.TimeHelper;
+import srt.ex.ReachFileTailException;
+import srt.ex.SrtException;
 import translate.site.iciba.CibaWordTranslate;
 
 import com.wnc.basic.BasicFileUtil;
 import com.wnc.run.RunCmd;
 import com.wnc.srtlearn.dao.DictionaryDao;
 import com.wnc.srtlearn.dao.FavDao;
-import com.wnc.srtlearn.ex.ReachFileTailException;
-import com.wnc.srtlearn.ex.SrtException;
 import com.wnc.srtlearn.modules.translate.Topic;
 import com.wnc.srtlearn.setting.SrtSetting;
 import common.swing.AlertUtil;
@@ -46,6 +44,7 @@ import common.swing.ImplAWTEventListener;
 import common.swing.KeyCallBack;
 import common.swing.SnapUtil;
 import common.uihelper.MyAppParams;
+import common.utils.MyFileUtil;
 import common.utils.TextFormatUtil;
 
 public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
@@ -319,7 +318,7 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
         srtPlayService.playSrt();
     }
 
-    private void enter(String srtFilePath)
+    public void enter(String srtFilePath)
     {
         this.jtfSrtFile.setText(srtFilePath);
         try
@@ -390,17 +389,15 @@ public class SnapPanel extends JPanel implements INewFrame, srt.IBaseLearn,
     {
         String srtFile = this.jtfSrtFile.getText();
         File folder = new File(BasicFileUtil.getFileParent(srtFile));
-        folder.listFiles();
-        List<File> asList = Arrays.asList(folder.listFiles());
-        Collections.sort(asList);
-        for (int i = 0; i < asList.size(); i++)
+        List<File> sortedList = MyFileUtil.getSortFiles(folder.listFiles());
+        for (int i = 0; i < sortedList.size(); i++)
         {
-            String absolutePath = asList.get(i).getAbsolutePath();
+            String absolutePath = sortedList.get(i).getAbsolutePath();
             if(absolutePath.equals(srtFile))
             {
-                if(i < asList.size() - 1)
+                if(i < sortedList.size() - 1)
                 {
-                    return asList.get(i + 1).getAbsolutePath();
+                    return sortedList.get(i + 1).getAbsolutePath();
                 }
             }
         }

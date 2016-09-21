@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import srt.ex.ReachFileHeadException;
+import srt.ex.ReachFileTailException;
+import srt.ex.SrtException;
+import srt.ex.SrtNotFoundException;
+
 import com.wnc.basic.BasicStringUtil;
-import com.wnc.srtlearn.ex.ErrCode;
-import com.wnc.srtlearn.ex.ReachFileHeadException;
-import com.wnc.srtlearn.ex.ReachFileTailException;
-import com.wnc.srtlearn.ex.SrtException;
-import com.wnc.srtlearn.ex.SrtNotFoundException;
 
 public class DataHolder
 {
@@ -39,7 +39,7 @@ public class DataHolder
      */
     public static List<SrtInfo> getAllSrtInfos()
     {
-        if(BasicStringUtil.isNullString(fileKey))
+        if (BasicStringUtil.isNullString(fileKey))
         {
             return null;
         }
@@ -102,13 +102,13 @@ public class DataHolder
     {
         checkExist();
         List<SrtInfo> list = srtInfoMap.get(fileKey);
-        if(selIndex == -1)
+        if (selIndex == -1)
         {
-            throw new ReachFileHeadException(ErrCode.SRT_REACH_HEAD);
+            throw new ReachFileHeadException();
         }
-        if(selIndex >= list.size())
+        if (selIndex >= list.size())
         {
-            throw new ReachFileTailException(ErrCode.SRT_REACH_TAIL);
+            throw new ReachFileTailException();
         }
         return list.get(selIndex);
     }
@@ -117,17 +117,17 @@ public class DataHolder
     {
         checkExist();
         List<SrtInfo> list = srtInfoMap.get(fileKey);
-        if(srtIndex == -1)
+        if (srtIndex == -1)
         {
             srtIndex = 0;
             indexMap.put(fileKey, srtIndex);
-            throw new ReachFileHeadException(ErrCode.SRT_REACH_HEAD);
+            throw new ReachFileHeadException();
         }
-        if(srtIndex >= list.size())
+        if (srtIndex >= list.size())
         {
             srtIndex = list.size() - 1;
             indexMap.put(fileKey, srtIndex);
-            throw new ReachFileTailException(ErrCode.SRT_REACH_TAIL);
+            throw new ReachFileTailException();
         }
         indexMap.put(fileKey, srtIndex);
         return list.get(srtIndex);
@@ -141,9 +141,9 @@ public class DataHolder
 
     private static void checkExist() throws SrtNotFoundException
     {
-        if(!srtInfoMap.containsKey(fileKey))
+        if (!srtInfoMap.containsKey(fileKey))
         {
-            throw new SrtNotFoundException(ErrCode.SRT_NOT_FOUND);
+            throw new SrtNotFoundException();
         }
     }
 
@@ -157,7 +157,7 @@ public class DataHolder
         for (int i = 0; i < list.size(); i++)
         {
             SrtInfo info = list.get(i);
-            if(formatSeconds(info.getFromTime()) >= l
+            if (formatSeconds(info.getFromTime()) >= l
                     || formatSeconds(info.getToTime()) >= l)
             {
                 srtInfo = info;
@@ -166,7 +166,7 @@ public class DataHolder
             }
         }
         // 返回最后一个
-        if(srtInfo == null)
+        if (srtInfo == null)
         {
             srtInfo = list.get(list.size() - 1);
             srtIndex = list.size() - 1;
@@ -182,11 +182,11 @@ public class DataHolder
 
     public static void appendData(String srtFile, List<SrtInfo> srtInfos)
     {
-        if(!srtInfoMap.containsKey(srtFile))
+        if (!srtInfoMap.containsKey(srtFile))
         {
             srtInfoMap.put(srtFile, srtInfos);
         }
-        else if(!srtInfos.isEmpty())
+        else if (!srtInfos.isEmpty())
         {
             srtInfoMap.get(srtFile).addAll(srtInfos);
         }

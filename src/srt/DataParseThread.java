@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import srt.ex.SrtParseErrorException;
 import srt.picker.Picker;
 import srt.picker.PickerFactory;
 
@@ -21,13 +22,13 @@ public class DataParseThread extends Thread
     private String[] leftTimelineArr;
     private String[] rightTimelineArr;
 
-    public DataParseThread(String curFile)
+    public DataParseThread(String curFile) throws SrtParseErrorException
     {
         this.curFile = curFile;
         picker = PickerFactory.getPicker(curFile);
         if(picker == null)
         {
-            throw new RuntimeException("字幕文件找不到!");
+            throw new SrtParseErrorException();
         }
     }
 

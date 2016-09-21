@@ -2,7 +2,8 @@ package srt;
 
 import java.util.Queue;
 
-import com.wnc.srtlearn.ex.SrtException;
+import srt.ex.SrtException;
+
 import com.wnc.srtlearn.modules.srt.SrtVoiceHelper;
 import com.wnc.srtlearn.monitor.StudyMonitor;
 import com.wnc.srtlearn.monitor.work.ActiveWork;

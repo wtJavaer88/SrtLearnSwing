@@ -6,11 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import srt.ex.SrtException;
+import srt.ex.SrtNotFoundException;
+
 import com.wnc.basic.BasicDateUtil;
 import com.wnc.basic.BasicFileUtil;
 import com.wnc.srtlearn.dao.FavDao;
-import com.wnc.srtlearn.ex.SrtException;
-import com.wnc.srtlearn.ex.SrtNotFoundException;
 import com.wnc.srtlearn.modules.srt.SrtVoiceHelper;
 import com.wnc.srtlearn.pojo.FavoriteMultiSrt;
 import com.wnc.srtlearn.pojo.FavoriteSingleSrt;
@@ -191,7 +192,7 @@ public class SrtPlayService
         else
         {
             Log.e("srt", "not found " + srtFile);
-            throw new SrtNotFoundException("找不到该文件的字幕!");
+            throw new SrtNotFoundException();
         }
     }
 

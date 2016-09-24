@@ -53,6 +53,11 @@ import srt.ex.SrtException;
 import translate.site.iciba.CibaWordTranslate;
 
 public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, KeyCallBack {
+	private static final int _SCROLLBAR_WIDTH = 20;// 滚动条的宽度
+	private static final int _FONT_SIZE = 20;// 字体大小
+	private static final int _FONT_HEIGHT = 35;// 字体实际像素高度
+	private static final int _SCROLLPANEL_WIDTH = 300;// 滚动条宽度
+	private static final int _SCROLLPANEL_HEIGHT = 200;// 滚动条高度
 	SrtFrame m;
 	JButton chooseBt;// 选择
 	JButton startBt;// 开始
@@ -91,7 +96,7 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 	public void init() {
 		this.setLayout(null);
 
-		Font font = new Font("微软雅黑", Font.BOLD, 20);
+		Font font = new Font("微软雅黑", Font.BOLD, _FONT_SIZE);
 
 		chooseBt = new JButton("选择字幕");// 选择
 		startBt = new JButton("Start!");// 开始
@@ -103,7 +108,6 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 		dictLabel = new JLabel();
 		dictLabel.setFont(font);
 		dictLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		// dictLabel.setPreferredSize(new Dimension(300 - 20, 200));
 		setLabelAndAutoSize("", 0);
 		scrollPane = new JScrollPane(dictLabel);
 		scrollPane.setLayout(new ScrollPaneLayout());
@@ -139,7 +143,7 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 		snapBt.setBounds(450, 120, 100, 30);
 
 		processLabel.setBounds(50, 160, 300, 30);
-		scrollPane.setBounds(480, 160, 300, 200);
+		scrollPane.setBounds(480, 160, _SCROLLPANEL_WIDTH, _SCROLLPANEL_HEIGHT);
 
 		jtaEng.setBounds(50, 200, 400, 90);
 		jtaChs.setBounds(50, 300, 400, 90);
@@ -411,7 +415,7 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 	 */
 	private void setLabelAndAutoSize(String text, int lines) {
 		this.dictLabel.setText(text);
-		dictLabel.setPreferredSize(new Dimension(300 - 20, 35 * lines));
+		dictLabel.setPreferredSize(new Dimension(_SCROLLPANEL_WIDTH - _SCROLLBAR_WIDTH, _FONT_HEIGHT * lines));
 	}
 
 	private void setSrtContentAndPlay(SrtInfo srt) {

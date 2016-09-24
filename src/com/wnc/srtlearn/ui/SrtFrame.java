@@ -17,7 +17,7 @@ public class SrtFrame extends JFrame
 
     public static String FFMPEG_EXE;
     public static String MEDIA_INFO_EXE;
-    SnapPanel sp;
+    SrtLearnPanel sp;
 
     public SrtFrame()
     {
@@ -31,7 +31,7 @@ public class SrtFrame extends JFrame
 
     public void init()
     {
-        sp = new SnapPanel(this);
+        sp = new SrtLearnPanel(this);
         sp.setBounds(0, 0, 800, 600);
         this.add(sp);
         this.setFocusable(true);

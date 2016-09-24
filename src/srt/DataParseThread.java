@@ -36,7 +36,7 @@ public class DataParseThread extends Thread {
 		final BasicRunTimeUtil basicRunTimeUtil = new BasicRunTimeUtil("DataParseThread");
 		basicRunTimeUtil.beginRun();
 
-		DataHolder.appendData(curFile, picker.get10CacheSrtInfos("00:21:24.030"));
+		DataHolder.appendData(curFile, picker.get10CacheSrtInfos("00:19:24.030"));
 
 		while (isNotComplete()) {
 			executor.execute(new Task(curPage));

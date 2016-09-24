@@ -46,7 +46,7 @@ public class LrcPicker implements Picker {
 
 	@Override
 	public List<SrtInfo> getSrtInfos(int start, int end) {
-		return getSrtInfosCommon(start, end);
+		return dataHelper.getSrtInfosCommon(start, end);
 	}
 
 	@Override
@@ -61,59 +61,56 @@ public class LrcPicker implements Picker {
 
 	@Override
 	public List<SrtInfo> get10CacheSrtInfos(String fromTimeStr) {
-		return getSrtInfosCommon(fromTimeStr, 10);
+		return dataHelper.getSrtInfosCommon(fromTimeStr, 10);
 	}
 
-	private List<SrtInfo> getSrtInfosCommon(String fromTimeStr, int count) {
-		return getSrtInfosCommon(0, segments.size(), fromTimeStr, count);
-	}
+	DataHelper dataHelper = new DataHelper() {
 
-	private List<SrtInfo> getSrtInfosCommon(int start, int end) {
-		return getSrtInfosCommon(start, end, null, Integer.MAX_VALUE);
-	}
+		@Override
+		public List<SrtInfo> getSrtInfosCommon(int start, int end, String fromTimeStr, int count) {
+			List<SrtInfo> srtInfos = new ArrayList<SrtInfo>();
 
-	private List<SrtInfo> getSrtInfosCommon(int start, int end, String fromTimeStr, int count) {
-		List<SrtInfo> srtInfos = new ArrayList<SrtInfo>();
+			int index = 0;
+			TimeInfo fromTime = null;
+			String chs = null;
+			String eng = null;
 
-		int index = 0;
-		TimeInfo fromTime = null;
-		String chs = null;
-		String eng = null;
-
-		for (int i = start; i < end && i < segments.size(); i++) {
-			String str = segments.get(i);
-			if (!str.matches("^\\[\\d{2}:\\d{2}\\.\\d{2}\\].*+")) {
-				continue;
-			}
-
-			fromTime = parseTimeInfo(PatternUtil.getFirstPatternGroup(str, "\\d{2}:\\d{2}\\.\\d{2}"));
-			System.out.println(fromTime.toString());
-			if (fromTimeStr != null && fromTimeStr.compareTo(fromTime.toString()) > 0) {
-				continue;
-			}
-			if (index > 0 && srtInfos.get(index - 1).getToTime() == null) {
-				srtInfos.get(index - 1).setToTime(fromTime);
-			}
-			chs = PatternUtil.getFirstPatternGroup(str, "\\](.*?)\\\\N");
-			eng = PatternUtil.getFirstPatternGroup(str, "\\\\N(.*+)");
-			if (fromTime != null && !BasicStringUtil.isNullAllString(chs, eng)) {
-				index++;
-				SrtInfo srtInfo = new SrtInfo();
-				srtInfo.setSrtIndex(index);
-				srtInfo.setFromTime(fromTime);
-				srtInfo.setChs(chs);
-				srtInfo.setEng(eng);
-				srtInfos.add(srtInfo);
-				if (srtInfos.size() == count) {
-					return srtInfos;
+			for (int i = start; i < end && i < segments.size(); i++) {
+				String str = segments.get(i);
+				if (!str.matches("^\\[\\d{2}:\\d{2}\\.\\d{2}\\].*+")) {
+					continue;
 				}
-				fromTime = null;
-				chs = null;
-				eng = null;
-			} else {
-				System.out.println("Cause A Err, Not Match In File<" + srtFile + "> Line " + i + "...");
+
+				fromTime = parseTimeInfo(PatternUtil.getFirstPatternGroup(str, "\\d{2}:\\d{2}\\.\\d{2}"));
+				System.out.println(fromTime.toString());
+				if (fromTimeStr != null && fromTimeStr.compareTo(fromTime.toString()) > 0) {
+					continue;
+				}
+				if (index > 0 && srtInfos.get(index - 1).getToTime() == null) {
+					srtInfos.get(index - 1).setToTime(fromTime);
+				}
+				chs = PatternUtil.getFirstPatternGroup(str, "\\](.*?)\\\\N");
+				eng = PatternUtil.getFirstPatternGroup(str, "\\\\N(.*+)");
+				if (fromTime != null && !BasicStringUtil.isNullAllString(chs, eng)) {
+					index++;
+					SrtInfo srtInfo = new SrtInfo();
+					srtInfo.setSrtIndex(index);
+					srtInfo.setFromTime(fromTime);
+					srtInfo.setChs(chs);
+					srtInfo.setEng(eng);
+					srtInfos.add(srtInfo);
+					if (srtInfos.size() == count) {
+						return srtInfos;
+					}
+					fromTime = null;
+					chs = null;
+					eng = null;
+				} else {
+					System.out.println("Cause A Err, Not Match In File<" + srtFile + "> Line " + i + "...");
+				}
 			}
+			return srtInfos;
 		}
-		return srtInfos;
-	}
+	};
+
 }

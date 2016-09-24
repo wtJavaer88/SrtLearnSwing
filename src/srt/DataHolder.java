@@ -1,6 +1,5 @@
 package srt;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,12 +163,13 @@ public class DataHolder {
 		if (srtInfoMap.get(fileKey).size() > 0)
 			current = DataHolder.getCurrent();
 		DataHolder.clearSrtInfos(fileKey);
-		Collections.sort(allInfos, new java.util.Comparator<SrtInfo>() {
-			@Override
-			public int compare(SrtInfo lhs, SrtInfo rhs) {
-				return lhs.getFromTime().toString().compareTo(rhs.getFromTime().toString());
-			}
-		});
+		// Collections.sort(allInfos, new java.util.Comparator<SrtInfo>() {
+		// @Override
+		// public int compare(SrtInfo lhs, SrtInfo rhs) {
+		// return
+		// lhs.getFromTime().toString().compareTo(rhs.getFromTime().toString());
+		// }
+		// });
 		DataHolder.appendData(fileKey, allInfos);
 		if (current != null)
 			for (int i = 0; i < DataHolder.getAllSrtInfos().size(); i++) {

@@ -2,6 +2,7 @@ package com.wnc.srtlearn.ui;
 
 import java.awt.AWTEvent;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -18,8 +19,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneLayout;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.wnc.basic.BasicFileUtil;
@@ -60,7 +64,7 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 
 	JLabel processLabel;
 	JLabel dictLabel;// 显示字典信息
-
+	JScrollPane scrollPane;// 包裹dictLabel
 	public JTextField jtfSrtFile;
 	public JTextArea jtaEng;
 	public JTextArea jtaChs;
@@ -79,9 +83,8 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 
 		String defaultSrt = "D:\\Users\\wnc\\oral\\字幕\\Friends.S01\\S01E24.ass";
 		defaultSrt = "E:\\资源\\oral\\字幕\\Friends.S01\\S01E24.ass";
-		defaultSrt = "D:\\用户目录\\workspace\\SrtLearn\\res2\\10.ao ou iu.lrc";
+		// defaultSrt = "D:\\用户目录\\workspace\\SrtLearn\\res2\\10.ao ou iu.lrc";
 		enter(defaultSrt);
-		System.out.println(getNextEp());
 	}
 
 	@Override
@@ -97,16 +100,19 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 		favoriteBt = new JButton("喜欢");
 		snapBt = new JButton("截图");
 		processLabel = new JLabel();// 进度标签
-		dictLabel = new JLabel("");
+		dictLabel = new JLabel();
 		dictLabel.setFont(font);
-
+		dictLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		// dictLabel.setPreferredSize(new Dimension(300 - 20, 200));
+		setLabelAndAutoSize("", 0);
+		scrollPane = new JScrollPane(dictLabel);
+		scrollPane.setLayout(new ScrollPaneLayout());
+		// scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		jtfSrtFile = new JTextField(200);
 		jtfSrtFile.setToolTipText("请选择一集字幕，或者手动拖拽！");
 		jtaEng = getTextArea(font);
 		jtaChs = getTextArea(font);
-		// 创建复选框按键，并设置快捷键，和选定
-		unComplete = new JCheckBox("unComplete");
-		unComplete.setMnemonic(KeyEvent.VK_C);
 	}
 
 	public JTextArea getTextArea(Font font) {
@@ -133,7 +139,7 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 		snapBt.setBounds(450, 120, 100, 30);
 
 		processLabel.setBounds(50, 160, 300, 30);
-		dictLabel.setBounds(480, 160, 300, 400);
+		scrollPane.setBounds(480, 160, 300, 200);
 
 		jtaEng.setBounds(50, 200, 400, 90);
 		jtaChs.setBounds(50, 300, 400, 90);
@@ -150,7 +156,7 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 		this.add(snapBt);
 
 		this.add(processLabel);
-		this.add(dictLabel);
+		this.add(scrollPane);
 
 		this.add(jtfSrtFile);
 		this.add(jtaEng);
@@ -324,7 +330,6 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 		String srtFile = srtPlayService.getCurFile();
 		File folder = new File(BasicFileUtil.getFileParent(srtFile));
 		List<File> sortedList = MyFileUtil.getSortFiles(folder.listFiles());
-		System.out.println(sortedList);
 
 		List<File> validFiles = new ArrayList<File>();
 		for (File f : sortedList) {
@@ -360,8 +365,10 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 		if (topics.size() > 0) {
 			StringBuilder accum = new StringBuilder(128);
 			accum.append("<html>");
+			int lines = 0;
 			for (Topic topic : topics) {
 				accum.append(topic.getTopic_word());
+				lines++;
 				if (!topic.getTopic_base_word().equals(topic.getTopic_word())) {
 					accum.append("<font size=\"3\" color=\"red\">");
 					accum.append(" (原型:" + topic.getTopic_base_word() + ")");
@@ -369,20 +376,42 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn, 
 				}
 				accum.append("<br>");
 				accum.append(topic.getMean_cn());
+				double hzCount = 0;
+				for (int i = 0; i < topic.getMean_cn().length(); i++) {
+					if (TextFormatUtil.isChineseChar(topic.getMean_cn().charAt(i))) {
+						hzCount++;
+					} else {
+						hzCount += 0.5;
+					}
+				}
+				lines += Math.ceil(hzCount / 15);
 				accum.append("<br>");
 				accum.append("<font size=\"3\" color=\"red\">");
 				accum.append(topic.getBookName());
+				lines++;
 				accum.append("</font>");
 				accum.append("<br>");
 				accum.append("<br>");
+				lines++;
 			}
 			accum.append("</html>");
-			this.dictLabel.setText(accum.toString());
+			setLabelAndAutoSize(accum.toString(), lines - 1);
 		} else {
-			this.dictLabel.setText("");
+			setLabelAndAutoSize("", 0);
 		}
 		topics.clear();
 		topics = null;
+	}
+
+	/**
+	 * 自动调节Label的高度,不让它隐藏了
+	 * 
+	 * @param accum
+	 * @param lines
+	 */
+	private void setLabelAndAutoSize(String text, int lines) {
+		this.dictLabel.setText(text);
+		dictLabel.setPreferredSize(new Dimension(300 - 20, 35 * lines));
 	}
 
 	private void setSrtContentAndPlay(SrtInfo srt) {

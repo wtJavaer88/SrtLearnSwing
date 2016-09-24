@@ -57,7 +57,7 @@ public class AssPicker implements Picker {
 
 	@Override
 	public List<SrtInfo> getSrtInfos(int start, int end) {
-		return getSrtInfosCommon(start, end);
+		return dataHelper.getSrtInfosCommon(start, end);
 	}
 
 	private String getDialogAfterEight(String[] parts) {
@@ -80,70 +80,68 @@ public class AssPicker implements Picker {
 
 	@Override
 	public List<SrtInfo> get10CacheSrtInfos(String fromTimeStr) {
-		return getSrtInfosCommon(fromTimeStr, 10);
+		return dataHelper.getSrtInfosCommon(fromTimeStr, 10);
 	}
 
-	private List<SrtInfo> getSrtInfosCommon(String fromTimeStr, int count) {
-		return getSrtInfosCommon(0, segments.size(), fromTimeStr, count);
-	}
+	DataHelper dataHelper = new DataHelper() {
 
-	private List<SrtInfo> getSrtInfosCommon(int start, int end) {
-		return getSrtInfosCommon(start, end, null, Integer.MAX_VALUE);
-	}
+		@Override
+		public List<SrtInfo> getSrtInfosCommon(int start, int end, String fromTimeStr, int count) {
+			List<SrtInfo> srtInfos = new ArrayList<SrtInfo>();
+			int index = 1;
+			TimeInfo fromTime = null;
+			TimeInfo toTime = null;
+			String chs = null;
+			String eng = null;
+			for (int i = start; i < end && i < segments.size(); i++) {
+				String str = segments.get(i);
+				String[] parts = str.split(",");
+				if (valid(parts)) {
+					String dialogue = getDialogAfterEight(parts);
 
-	private List<SrtInfo> getSrtInfosCommon(int start, int end, String fromTimeStr, int count) {
-		List<SrtInfo> srtInfos = new ArrayList<SrtInfo>();
-		int index = 1;
-		TimeInfo fromTime = null;
-		TimeInfo toTime = null;
-		String chs = null;
-		String eng = null;
-		for (int i = start; i < end && i < segments.size(); i++) {
-			String str = segments.get(i);
-			String[] parts = str.split(",");
-			if (valid(parts)) {
-				String dialogue = getDialogAfterEight(parts);
+					fromTime = parseTimeInfo(parts[1]);
 
-				fromTime = parseTimeInfo(parts[1]);
-
-				if (fromTimeStr != null && fromTimeStr.compareTo(fromTime.toString()) > 0) {
-					continue;
-				}
-
-				toTime = parseTimeInfo(parts[2]);
-				int pos = dialogue.indexOf("\\N");
-				if (pos != -1) {
-					chs = SrtTextHelper.getClearText(dialogue.substring(0, pos));
-					eng = SrtTextHelper.getClearText(dialogue.substring(pos + 2));
-				}
-
-				if (fromTime != null && toTime != null && chs != null && eng != null) {
-					SrtInfo srtInfo = new SrtInfo();
-					srtInfo.setSrtIndex(index);
-					srtInfo.setFromTime(fromTime);
-					srtInfo.setToTime(toTime);
-					srtInfo.setChs(chs);
-					srtInfo.setEng(eng);
-
-					srtInfos.add(srtInfo);
-					/**
-					 * 如果达到指定的个数,则直接返回
-					 */
-					if (srtInfos.size() == count) {
-						return srtInfos;
+					if (fromTimeStr != null && fromTimeStr.compareTo(fromTime.toString()) > 0) {
+						continue;
 					}
-					index++;
-					fromTime = null;
-					toTime = null;
-					chs = null;
-					eng = null;
-				} else {
-					// System.out.println("Cause A Err, Not Match In File<" +
-					// srtFile + "> Line " + i + "...");
-				}
-			}
 
+					toTime = parseTimeInfo(parts[2]);
+					int pos = dialogue.indexOf("\\N");
+					if (pos != -1) {
+						chs = SrtTextHelper.getClearText(dialogue.substring(0, pos));
+						eng = SrtTextHelper.getClearText(dialogue.substring(pos + 2));
+					}
+
+					if (fromTime != null && toTime != null && chs != null && eng != null) {
+						SrtInfo srtInfo = new SrtInfo();
+						srtInfo.setSrtIndex(index);
+						srtInfo.setFromTime(fromTime);
+						srtInfo.setToTime(toTime);
+						srtInfo.setChs(chs);
+						srtInfo.setEng(eng);
+
+						srtInfos.add(srtInfo);
+						/**
+						 * 如果达到指定的个数,则直接返回
+						 */
+						if (srtInfos.size() == count) {
+							return srtInfos;
+						}
+						index++;
+						fromTime = null;
+						toTime = null;
+						chs = null;
+						eng = null;
+					} else {
+						// System.out.println("Cause A Err, Not Match In File<"
+						// +
+						// srtFile + "> Line " + i + "...");
+					}
+				}
+
+			}
+			return srtInfos;
 		}
-		return srtInfos;
-	}
+
+	};
 }

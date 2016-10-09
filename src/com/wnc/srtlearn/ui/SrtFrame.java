@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import com.wnc.srtlearn.setting.Config;
+
 public class SrtFrame extends JFrame
 {
     public static String PIC_CONVERT_EXE;
@@ -26,6 +28,7 @@ public class SrtFrame extends JFrame
 
     public static void main(String[] args)
     {
+        System.out.println(Config.dbFolder);
         new SrtFrame();
     }
 

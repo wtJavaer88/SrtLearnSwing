@@ -39,6 +39,8 @@ $RECYCLE.BIN/
 *.apk
 *.class
 
+src/config.properties
+
 bin/
 libs/
 .settings/

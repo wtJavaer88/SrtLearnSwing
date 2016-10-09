@@ -182,7 +182,7 @@ public class SrtPlayService
                         e.printStackTrace();
                     }
                 }
-                sBaseLearn.play(getSrtInfo(SRT_VIEW_TYPE.VIEW_RIGHT));
+                sBaseLearn.play(getSrtInfo(SRT_VIEW_TYPE.VIEW_CURRENT));
             }
             else
             {

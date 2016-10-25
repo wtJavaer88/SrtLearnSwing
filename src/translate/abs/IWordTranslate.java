@@ -57,15 +57,17 @@ public interface IWordTranslate extends ITranslate
      * 近义词
      * 
      * @return
+     * @throws Exception
      */
-    public String getSimilar();
+    public String getSimilar() throws Exception;
 
     /**
      * 反义词
      * 
      * @return
+     * @throws Exception
      */
-    public String getAntonym();
+    public String getAntonym() throws Exception;
 
     /**
      * 获取单词的各种变形

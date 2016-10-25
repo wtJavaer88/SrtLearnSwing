@@ -40,14 +40,31 @@ public class CibaWordTranslate extends CibaTranslate implements IWordTranslate
         return null;
     }
 
-    public String getSimilar()
+    public String getsameAnalysis() throws Exception
     {
-        return null;
+        if(!getJsonObject().containsKey("sameAnalysis"))
+        {
+            return null;
+        }
+        return getJsonObject().getJSONArray("sameAnalysis").toString();
     }
 
-    public String getAntonym()
+    public String getSimilar() throws Exception
     {
-        return null;
+        if(!getJsonObject().containsKey("synonym"))
+        {
+            return null;
+        }
+        return getJsonObject().getJSONArray("synonym").toString();
+    }
+
+    public String getAntonym() throws Exception
+    {
+        if(!getJsonObject().containsKey("antonym"))
+        {
+            return null;
+        }
+        return getJsonObject().getJSONArray("antonym").toString();
     }
 
     @Override

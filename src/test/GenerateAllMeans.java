@@ -13,6 +13,12 @@ import com.wnc.srtlearn.dao.DictionaryDao;
 import db.DataSource;
 import db.DbExecMgr;
 
+/**
+ * Book内的单词同步
+ * 
+ * @author cpr216
+ * 
+ */
 public class GenerateAllMeans
 {
     public static void main(String[] args)

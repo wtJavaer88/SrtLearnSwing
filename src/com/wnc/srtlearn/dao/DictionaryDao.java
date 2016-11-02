@@ -156,4 +156,16 @@ public class DictionaryDao
         System.out.println(util.getUpdateSql());
         return DbExecMgr.execOnlyOneUpdate(util.getUpdateSql());
     }
+
+    public static boolean updateMean2(String id, String mean)
+            throws SQLException
+    {
+        DbFieldSqlUtil util = new DbFieldSqlUtil("DICTIONARY", "");
+        util.addWhereField(new DbField("ID", id));
+        util.addUpdateField(new DbField("MEAN_CN", StringEscapeUtils
+                .escapeSql(mean)));
+        // System.out.println(util.getUpdateSql());
+        // return true;
+        return DbExecMgr.execOnlyOneUpdate(util.getUpdateSql());
+    }
 }

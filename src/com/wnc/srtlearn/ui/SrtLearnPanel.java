@@ -308,7 +308,7 @@ public class SrtLearnPanel extends JPanel implements INewFrame, srt.IBaseLearn,
                             RunCmd.runCommand("\"C:\\Program Files\\Internet Explorer\\iexplore.exe\" "
                                     + "\""
                                     + new CibaWordTranslate(selWord)
-                                            .getWebUrlForPC() + "\"");
+                                            .getWebUrlForMobile() + "\"");
                         }
                     }).start();
 
